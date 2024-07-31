@@ -1,0 +1,65 @@
+<header class="p-4 p-lg-3 bg-light shadow">
+  <div class="container">
+    <div
+      class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start"
+    >
+      <img class="me-lg-3 me-0" src="favicon.ico" alt="Angular 18" />
+      <ul
+        class="nav col-12 col-lg-auto me-lg-auto my-2 justify-content-center align-items-center my-lg-0"
+      >
+        <li>
+          <div class="fw-bolder px-lg-1 px-0">Todo App by oMoZERAo</div>
+        </li>
+        <li>
+          <a href="https://github.com/oMoZERAo">
+            <img
+              class="px-2"
+              src="github-logo.png"
+              width="50"
+              alt="oMoZERAo's GitHub"
+            />
+          </a>
+        </li>
+      </ul>
+
+      @if (authService.currentUserSignal() && !authService.isLoading()) {
+      <div class="text-lg-end text-center">
+        <div class="d-lg-flex align-items-center">
+          <div class="fw-bold mb-lg-0 mb-3 me-lg-3 me-0">
+            You logged in as {{ authService.currentUserSignal()?.username }}
+          </div>
+          <button type="button" (click)="onLogout()" class="btn btn-danger">
+            Logout
+          </button>
+        </div>
+      </div>
+      } @else if (authService.currentUserSignal() == null &&
+      !authService.isLoading()) {
+      <div class="text-end">
+        <button
+          type="button"
+          [routerLink]="['/login']"
+          class="btn btn-light shadow me-2"
+        >
+          Login
+        </button>
+        <button
+          type="button"
+          [routerLink]="['/register']"
+          class="btn btn-secondary shadow"
+        >
+          Sign-up
+        </button>
+      </div>
+      } @else {
+      <div class="text-lg-end text-center">
+        <div class="d-lg-flex align-items-center">
+          <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+</header>

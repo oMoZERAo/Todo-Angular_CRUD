@@ -1,0 +1,470 @@
+<section class="p-2">
+  <nav class="my-4">
+    <ul
+      class="nav nav-tabs nav-pills nav-fill gap-2 p-1 m-auto custom-width small bg-dark rounded-5 shadow"
+      id="myTabs"
+      role="tablist"
+      style="
+        --bs-nav-link-color: var(--bs-white);
+        --bs-nav-link-hover-color: var(--bs-white);
+        --bs-nav-pills-link-active-color: var(--bs-dark);
+        --bs-nav-pills-link-active-bg: var(--bs-white);
+      "
+    >
+      <li class="nav-item" role="presentation">
+        <a
+          class="nav-link active rounded-5"
+          id="nav-home-tab"
+          data-bs-toggle="tab"
+          data-bs-target="#nav-home"
+          type="button"
+          role="tab"
+          aria-controls="nav-home"
+          aria-selected="true"
+          >In Progress</a
+        >
+      </li>
+      <li class="nav-item" role="presentation">
+        <a
+          class="nav-link rounded-5"
+          id="nav-profile-tab"
+          data-bs-toggle="tab"
+          data-bs-target="#nav-profile"
+          type="button"
+          role="tab"
+          aria-controls="nav-profile"
+          aria-selected="false"
+          >Completed</a
+        >
+      </li>
+    </ul>
+  </nav>
+
+  <div class="tab-content mt-5" id="nav-tabContent">
+    <div
+      class="tab-pane fade show active"
+      id="nav-home"
+      role="tabpanel"
+      aria-labelledby="nav-home-tab"
+    >
+      <div class="d-md-flex d-block justify-content-md-between text-center">
+        <div>
+          @if (contextMessage) {
+          <div
+            class="alert alert-success d-flex text-center justify-content-between gap-5"
+            role="alert"
+          >
+            {{ contextMessage }}
+            <button
+              (click)="onCloseMessage()"
+              type="button"
+              class="btn-close"
+              aria-label="Close"
+            ></button>
+          </div>
+          }
+        </div>
+        <div class="justify-content-end my-3">
+          <button
+            type="button"
+            class="btn btn-dark"
+            data-bs-toggle="modal"
+            data-bs-target="#addTodo"
+          >
+            Add Task
+          </button>
+        </div>
+      </div>
+      <div
+        class="modal fade"
+        id="addTodo"
+        tabindex="-1"
+        aria-labelledby="addTodoLabel"
+        aria-hidden="true"
+        data-bs-backdrop="static"
+        data-bs-keyboard="false"
+      >
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="addTodoLabel">Add Task</h1>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+                (click)="onCloseModal()"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <form>
+                <div class="mb-3 text-start">
+                  <label for="text" class="col-form-label">Task:</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    [(ngModel)]="text"
+                    name="textInput"
+                    required
+                  />
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+                (click)="onCloseModal()"
+              >
+                Close
+              </button>
+              <button
+                (click)="onAdd()"
+                type="button"
+                class="btn btn-dark"
+                data-bs-dismiss="modal"
+              >
+                Add
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card p-3 rounded-4">
+        <div class="row mb-2 fw-bold fs-5">
+          <div class="col-md-1 d-md-block d-none">No.</div>
+          <div class="col-md-5 d-md-block d-none">Task</div>
+          <div class="col-md-2 d-md-block d-none">Date</div>
+          <div class="col-md-2 d-md-block d-none">Status</div>
+        </div>
+
+        @if (isLoading) {
+        <div class="text-lg-end text-center my-5">
+          <div class="d-lg-flex align-items-center justify-content-center">
+            <div class="spinner-border" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        </div>
+        } @else { @for (todo of todosService.inProgress(); track $index) {
+        <div class="card my-1 rounded-4 justify-content-between">
+          <div class="row p-md-0 p-3 align-items-center">
+            <div class="col-md-1 col-12">
+              <div class="card-body text-wrap fw-bold">{{ $index + 1 }}</div>
+            </div>
+            <div class="col-md-5 col-12 py-md-0 py-2">
+              <div class="card-body text-wrap">{{ todo.text }}</div>
+            </div>
+            <div class="col-md-2 col-12 py-md-0 py-2">
+              <div class="card-body">{{ todo.createdAt }}</div>
+            </div>
+            <div class="col-md-2 col-12 py-md-0 py-2">
+              @if (todo.isCompleted) {
+              <span class="badge text-bg-success">Completed</span>
+              } @else {
+              <span class="badge text-bg-warning">In Progress</span>
+              }
+            </div>
+            <div class="col-md-2 col-12 py-md-0 py-2">
+              <a
+                class="px-1"
+                type="button"
+                (click)="onEditButton(todo.text, todo.isCompleted)"
+                data-bs-toggle="modal"
+                data-bs-target="#editTodo"
+              >
+                <img src="edit.png" alt="Edit" width="50" />
+              </a>
+              <a type="button" (click)="onRemove(todo.id)" class="px-1">
+                <img src="remove.png" alt="Remove" width="50" />
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="modal fade"
+          id="editTodo"
+          tabindex="-1"
+          aria-labelledby="editTodoLabel"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="editTodoLabel">Edit Task</h1>
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                  (click)="onCloseModal()"
+                ></button>
+              </div>
+              <div class="modal-body">
+                <form>
+                  <div class="mb-3 text-start">
+                    <label for="text" class="col-form-label">Task:</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      [(ngModel)]="text"
+                      name="textInput"
+                      required
+                    />
+                  </div>
+                  <div class="mb-3 text-start">
+                    <label for="text" class="col-form-label">Status:</label>
+                    <select
+                      class="form-select"
+                      aria-label="Status select"
+                      [(ngModel)]="status"
+                      name="status"
+                      required
+                    >
+                      <option [ngValue]="false">In Progress</option>
+                      <option [ngValue]="true">Completed</option>
+                    </select>
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                  (click)="onCloseModal()"
+                >
+                  Close
+                </button>
+                <button
+                  (click)="onEdit(todo)"
+                  type="button"
+                  class="btn btn-dark"
+                  data-bs-dismiss="modal"
+                >
+                  Edit
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        } @empty {
+        <div class="card my-1 rounded-4 justify-content-between">
+          <div class="card-body text-wrap py-5">No todo found!</div>
+        </div>
+        }}
+      </div>
+    </div>
+
+    <div
+      class="tab-pane fade"
+      id="nav-profile"
+      role="tabpanel"
+      aria-labelledby="nav-profile-tab"
+    >
+      <div class="d-md-flex d-block justify-content-md-between text-center">
+        <div>
+          @if (contextMessage) {
+          <div
+            class="alert alert-success d-flex text-center justify-content-between gap-5"
+            role="alert"
+          >
+            {{ contextMessage }}
+            <button
+              (click)="onCloseMessage()"
+              type="button"
+              class="btn-close"
+              aria-label="Close"
+            ></button>
+          </div>
+          }
+        </div>
+      </div>
+      <div
+        class="modal fade"
+        id="addTodo"
+        tabindex="-1"
+        aria-labelledby="addTodoLabel"
+        aria-hidden="true"
+        data-bs-backdrop="static"
+        data-bs-keyboard="false"
+      >
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="addTodoLabel">Add Task</h1>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+                (click)="onCloseModal()"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <form>
+                <div class="mb-3 text-start">
+                  <label for="text" class="col-form-label">Task:</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    [(ngModel)]="text"
+                    name="textInput"
+                    required
+                  />
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+                (click)="onCloseModal()"
+              >
+                Close
+              </button>
+              <button
+                (click)="onAdd()"
+                type="button"
+                class="btn btn-dark"
+                data-bs-dismiss="modal"
+              >
+                Add
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card p-3 rounded-4">
+        <div class="row mb-2 fw-bold fs-5">
+          <div class="col-md-1 d-md-block d-none">No.</div>
+          <div class="col-md-5 d-md-block d-none">Task</div>
+          <div class="col-md-2 d-md-block d-none">Date</div>
+          <div class="col-md-2 d-md-block d-none">Status</div>
+        </div>
+
+        @if (isLoading) {
+        <div class="text-lg-end text-center my-5">
+          <div class="d-lg-flex align-items-center justify-content-center">
+            <div class="spinner-border" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        </div>
+        } @else { @for (todo of todosService.completed(); track $index) {
+        <div class="card my-1 rounded-4 justify-content-between">
+          <div class="row p-md-0 p-3 align-items-center">
+            <div class="col-md-1 col-12">
+              <div class="card-body text-wrap fw-bold">{{ $index + 1 }}</div>
+            </div>
+            <div class="col-md-5 col-12 py-md-0 py-2">
+              <div class="card-body text-wrap">{{ todo.text }}</div>
+            </div>
+            <div class="col-md-2 col-12 py-md-0 py-2">
+              <div class="card-body">{{ todo.createdAt }}</div>
+            </div>
+            <div class="col-md-2 col-12 py-md-0 py-2">
+              @if (todo.isCompleted) {
+              <span class="badge text-bg-success">Completed</span>
+              } @else {
+              <span class="badge text-bg-warning">In Progress</span>
+              }
+            </div>
+            <div class="col-md-2 col-12 py-md-0 py-2">
+              <a
+                class="px-1"
+                type="button"
+                (click)="onEditButton(todo.text, todo.isCompleted)"
+                data-bs-toggle="modal"
+                data-bs-target="#editTodo"
+              >
+                <img src="edit.png" alt="Edit" width="50" />
+              </a>
+              <a type="button" (click)="onRemove(todo.id)" class="px-1">
+                <img src="remove.png" alt="Remove" width="50" />
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="modal fade"
+          id="editTodo"
+          tabindex="-1"
+          aria-labelledby="editTodoLabel"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="editTodoLabel">Edit Task</h1>
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                  (click)="onCloseModal()"
+                ></button>
+              </div>
+              <div class="modal-body">
+                <form>
+                  <div class="mb-3 text-start">
+                    <label for="text" class="col-form-label">Task:</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      [(ngModel)]="text"
+                      name="textInput"
+                      required
+                    />
+                  </div>
+                  <div class="mb-3 text-start">
+                    <label for="text" class="col-form-label">Status:</label>
+                    <select
+                      class="form-select"
+                      aria-label="Status select"
+                      [(ngModel)]="status"
+                      name="status"
+                      required
+                    >
+                      <option [ngValue]="false">In Progress</option>
+                      <option [ngValue]="true">Completed</option>
+                    </select>
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                  (click)="onCloseModal()"
+                >
+                  Close
+                </button>
+                <button
+                  (click)="onEdit(todo)"
+                  type="button"
+                  class="btn btn-dark"
+                  data-bs-dismiss="modal"
+                >
+                  Edit
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        } @empty {
+        <div class="card my-1 rounded-4 justify-content-between">
+          <div class="card-body text-wrap py-5">No completed yet!</div>
+        </div>
+        }}
+      </div>
+    </div>
+  </div>
+</section>
