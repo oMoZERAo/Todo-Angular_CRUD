@@ -58,4 +58,8 @@ export class LoginComponent {
       },
     });
   }
+
+  onCloseAlert(): void {
+    this.errorMessage = null;
+  }
 }

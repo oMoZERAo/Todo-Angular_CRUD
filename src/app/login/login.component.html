@@ -14,7 +14,10 @@
               </p>
 
               @if (errorMessage) {
-              <p class="text-danger fw-bold my-4">{{ errorMessage }}</p>
+              <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <div class="text-danger fw-bold">{{ errorMessage }}</div>
+                <button class="btn-close" (click)="onCloseAlert()" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
               }
 
               <form [formGroup]="form" (ngSubmit)="onSubmit()">
