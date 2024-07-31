@@ -1,5 +1,5 @@
-import fs from 'fs';
-import path from 'path';
+const fs = require('fs');
+const path = require('path');
 const environmentFile = path.join(__dirname, 'src', 'environments', 'environment.ts');
 
 let content = fs.readFileSync(environmentFile, 'utf8');
